@@ -50,7 +50,7 @@ C Z\n\
 ";
   
 // win 6, draw 3, lose 0
-// player: X - rock  1, Y - paper 2 , Z - scisors 3
+// player:  X lose, Y draw, Z win
 // oppponen:  A rock, B paper, C scisors
 
 
@@ -86,13 +86,14 @@ unsigned short get_piece_value(char player)
 int main (void)
 {
 
-  size_t size;
-  char *input = get_input("input.txt", &size );
+  //size_t size;
+  // char *input = get_input("input.txt", &size );
 
+// player:  X lose, Y draw, Z win
   PointMap point_map[3] = {
     {
       .key = 'A', // pedra
-      .points = {3, 6, 0}
+      .points = {0, 3, 6}
     },
     {
       .key = 'B', //papel 
@@ -100,7 +101,7 @@ int main (void)
     }, 
     {
       .key = 'C', //tesoura 
-      .points = {6, 0, 3}
+      .points = {0, 3, 6}
     },
   };
 
@@ -114,37 +115,22 @@ int main (void)
       buffer[(i / 2) % 2] = input[i];
     }
 
-
     if(input[i] == '\n'){
 
       int value_round = get_round_value(buffer[0], buffer[1], point_map);
+      printf("value round %d \n", value_round);
 
       value_round += get_piece_value(buffer[1]);
+      printf("piece value %d,  piece : %c \n", get_piece_value(buffer[1]), buffer[1]);
       total += value_round;
     }
     ++i;
 
   }
 
-  
-  // 6 = get_round_value("A", "Y");
-  // int value_round = get_round_value(opponent, player);
-
   printf("total round: %d \n", total);
 
-  free(input);
-  return 0;
-
-
-    // opponent win
-    // A - Z, A - X, A - Y 
-       // B - X, B - Y, B - Z
-       // C - Y, C - Z, C - X
-       
-
-  
-
-
+  //free(input);
   return 0;
 
 }
