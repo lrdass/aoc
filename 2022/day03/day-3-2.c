@@ -140,13 +140,17 @@ int main (void)
     printf("buf %d, %s \n", 3*l+2 , cur_buffer[2]);
     printf("------------------------------\n");
 
-
+    #define NOT_FOUND '\n'
+    char curr_search ;
+    char first_search, second_search = NOT_FOUND;
     for (int i = 0; i < strlen(cur_buffer[0]); ++i){
       // ignore linebreaks for all searches
       if(cur_buffer[0][i] == '\n') break;
+      if(cur_buffer[0][i] == '\0') printf("wtf?? \n");
 
-      char curr_search = cur_buffer[0][i];
-      char first_search, second_search = 0;
+      curr_search = cur_buffer[0][i];
+      first_search= NOT_FOUND;
+        second_search = NOT_FOUND;
 
       for(int j = 0; j < strlen(cur_buffer[1]); ++j){
         if(cur_buffer[1][j] == curr_search ){
@@ -155,9 +159,8 @@ int main (void)
         }
       }
 
-      if(first_search != curr_search) continue;
+      if(first_search == NOT_FOUND) continue;
 
-    
       for(int j = 0; j < strlen(cur_buffer[2]); ++j){
         if(cur_buffer[2][j] == curr_search ){
           second_search = cur_buffer[2][j];
@@ -165,14 +168,14 @@ int main (void)
         }
       }
 
-      if(second_search != curr_search) continue;
-
+      if(second_search == NOT_FOUND) continue;
 
       if(first_search == second_search){
         result= first_search;
         printf("---------- \n");
         printf("line search: %d\n",l );
-        printf("search value: %c\n", first_search);
+        printf("search value: %c\n", curr_search);
+        printf("value at original : %d \n", char_at(cur_buffer[0], curr_search));
         printf("found in buffer 1 at: %d\n", char_at(cur_buffer[1], first_search));
 
         printf("found in buffer 2 at: %d\n", char_at(cur_buffer[2], second_search));
@@ -189,7 +192,6 @@ int main (void)
   }
 
   printf("total: %d \n", total);
-  printf("total iterations %d \n", num_lines /3 );
   
   return 0;
 }
