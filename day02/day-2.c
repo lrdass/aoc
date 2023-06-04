@@ -43,15 +43,13 @@ void sort(int *buffer, size_t size)
 // 0 2 => 0 1 -> % 2 = 0 1 
 // 4 6 => 0 1  /2 -> 2 3 %2 0 1
 // 8 10 => 0 1 /2 -> 4, 5 -> 0 1
+// A Y => Z
 char *input = "\
 A Y\n\
 B X\n\
 C Z\n\
 ";
   
-// win 6, draw 3, lose 0
-// player:  X lose, Y draw, Z win
-// oppponen:  A rock, B paper, C scisors
 
 
 typedef struct {
@@ -83,11 +81,30 @@ unsigned short get_piece_value(char player)
   return (unsigned short) player % 'X' + 1;
 }
 
+// win 6, draw 3, lose 0
+// player:  X lose, Y draw, Z win
+// player:  X rock, Y paper, Z scisors
+// oppponen:  A rock, B paper, C scisors
+
+// 'x', 'y', 'z'
+char get_piece_for_round(char opponent, char player)
+{
+  // acesso com 'A', 'B', 'C'
+  short opn_idx = (short) opponent % 'A'; // 0 - 2 => A - C
+  short ply_idx = (short) player % 'X'; // 0 - 2 => A - C
+  char* map[3] = {
+    "ZXY",
+    "XYZ",
+    "YZX",
+  };
+  return map[opn_idx][ply_idx]; // ['L', 'D', 'W'] 
+}
+
 int main (void)
 {
 
-  //size_t size;
-  // char *input = get_input("input.txt", &size );
+  size_t size;
+  char *input = get_input("input.txt", &size );
 
 // player:  X lose, Y draw, Z win
   PointMap point_map[3] = {
@@ -116,12 +133,10 @@ int main (void)
     }
 
     if(input[i] == '\n'){
-
+      // player:  X lose, Y draw, Z win
       int value_round = get_round_value(buffer[0], buffer[1], point_map);
-      printf("value round %d \n", value_round);
 
-      value_round += get_piece_value(buffer[1]);
-      printf("piece value %d,  piece : %c \n", get_piece_value(buffer[1]), buffer[1]);
+      value_round += get_piece_value(get_piece_for_round(buffer[0], buffer[1]));
       total += value_round;
     }
     ++i;
@@ -130,7 +145,7 @@ int main (void)
 
   printf("total round: %d \n", total);
 
-  //free(input);
+  free(input);
   return 0;
 
 }
