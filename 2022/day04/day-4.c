@@ -40,20 +40,7 @@ void sort(int *buffer, size_t size)
 
 }
 
-#define BUFFER_SIZE 100 
-char *input ="\
-vJrwpWtwJgWrhcsFMMfFFhFp\n\
-jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\n\
-PmmdzqPrVvPwwTWBwg\n\
-wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\n\
-ttgJtRGJQctTZtZT\n\
-CrZsJsPPZsGzwwsLwLmpwMDw\n";
 
-// a - z -> 1 - 26 
-// A - Z -> 27 - 52 
-
-// find the only letter that repeats for each line in both of its halfs
-// sum their priorities
 
 void get_input_line(char *dst_buffer, char *input, int line)
 {
@@ -82,14 +69,6 @@ void get_input_line(char *dst_buffer, char *input, int line)
 }
 
 
-short map_char_to_int(char l)
-{
-  if('a' <= l  && l <= 'z')
-    return (l % 'a') + 1;
-  if('A' <= l && l <= 'Z')
-    return (l % 'A') + 27;
-  return '\0';
-}
 
 void count_lines(int *dst, char *input)
 {
@@ -103,46 +82,94 @@ void count_lines(int *dst, char *input)
 
 }
 
+int char_at(char *input, char entry)
+{
+  for(int i = 0; i < strlen(input); ++i){
+    if(input[i] == entry) return i;
+  }
+  return -1;
+}
+
+typedef struct {
+  int min;
+  int max;
+}Interval;
+
+#define BUFFER_SIZE 100 
+char *input ="\
+10-16,9-15\n\
+\n";
+
+
+void interval_from_string_pair(char *input, Interval *i1, Interval *i2)
+{
+  int i = 0, digit = 0, digit_ind = 0;
+  char digits[20] = {0};
+
+  int numbers[4];
+
+  while(input[i] != '\0'){
+    int cur = input[i];
+    if(cur == '-' || cur == ','){
+      digit_ind= 0;
+      numbers[digit] = atoi(digits);
+      digit++;
+      memset(digits, 0, 20);
+    } else {
+      digits[digit_ind] = cur;
+      ++digit_ind;
+
+      if(input[i + 1] == '\0'){
+        numbers[digit] = atoi(digits);
+      }
+    }
+    ++i;
+  }
+
+  i1->min = numbers[0];
+  i1->max= numbers[1];
+  i2->min = numbers[2];
+  i2->max = numbers[3];
+
+}
+
+bool is_interval_fully_contained(const Interval *x, const Interval *y)
+{
+  return (x->min >= y->min && x->max <= y->max ||
+          y->min >= x->min && y->max <= x->max ||
+          x->min <= y->min && y->min <= x->max ||
+          y->min <= x->min && x->min <= y->max);
+}
 
 int main (void)
 {
+
+
+  int total = 0;
   size_t size;
   char *input = get_input("input.txt", &size );
 
   int num_lines = 0;
   count_lines(&num_lines, input);
 
-  int total = 0;
 
-  for(int x =0; x < num_lines; ++x) {
-    int cur_line = x;
-    char cur_buffer[BUFFER_SIZE] = {0};
-    get_input_line(cur_buffer, input, cur_line);
+  for(int l = 0; l < num_lines; ++l){
+    char *line;
+    get_input_line(line, input, l);
 
-  
-    size_t sz_buffer = strlen(cur_buffer) /2 ;
-    char h1[sz_buffer];
-    char h2[sz_buffer];
-
-    strncpy(h1, cur_buffer, sz_buffer);
-    strncpy(h2, cur_buffer + sz_buffer, sz_buffer);
-
-    char result = 0 ;
-    for(int i = 0; i < sz_buffer; ++i){
-      for(int j = 0; j < sz_buffer; ++j){
-        if(h1[i] == h2[j]){
-          result = h1[i];
-        }
-      }
+    Interval i1;
+    Interval i2;
+    interval_from_string_pair(line, &i1, &i2);
+    if(is_interval_fully_contained(&i1, &i2)){
+        printf("[%d, %d] [%d, %d] \n", i1.min, i1.max, i2.min, i2.max );
+        total += 1;
     }
-
-    short value = map_char_to_int(result);
-    total += value;
-    printf("result: %d \n", value);
   }
 
+
   printf("total: %d \n", total);
-  
+
+
   return 0;
 }
 

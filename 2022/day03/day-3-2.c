@@ -118,6 +118,14 @@ int char_at(char *input, char entry)
 
 int main (void)
 {
+
+  char *line;
+  get_input_line(line, "1234\n", 0);
+
+  printf("%s",line);
+
+  return 0;
+
   size_t size;
   char *input = get_input("input.txt", &size );
 
